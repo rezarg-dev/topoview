@@ -62,3 +62,80 @@ main {
   background: var(--background);
 }
 
+/* --- links --- */
+
+.link path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.link-wan path {
+  stroke: var(--wan);
+  stroke-width: 3;
+}
+
+.link-uplink path {
+  stroke-dasharray: 7 5;
+}
+
+.port {
+  font-size: 11px;
+  fill: var(--muted);
+  text-anchor: middle;
+  /* A halo in the background colour keeps the text readable where it
+     crosses a line. */
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 4px;
+  pointer-events: none;
+}
+
+/* --- nodes --- */
+
+.node {
+  cursor: pointer;
+  outline: none;
+}
+
+.node > :first-child {
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.node-router > :first-child {
+  fill: var(--router);
+}
+
+.node-switch > :first-child {
+  fill: var(--switch);
+}
+
+.node-cloud > :first-child {
+  fill: var(--cloud);
+}
+
+.glyph {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--text);
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 4px;
+  pointer-events: none;
+}
+
+.node-cloud .label {
+  stroke: none;
+  font-weight: 500;
+}
+
