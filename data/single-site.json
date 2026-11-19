@@ -1,0 +1,62 @@
+{
+  "name": "single-site",
+  "nodes": [
+    {
+      "id": "OFFICE-R1",
+      "kind": "router",
+      "site": "office",
+      "router_id": "1.1.1.1",
+      "summary": "192.168.10.0/25"
+    },
+    {
+      "id": "OFFICE-SW1",
+      "kind": "switch",
+      "site": "office",
+      "management_address": null,
+      "vlans": [
+        {
+          "id": 10,
+          "name": "staff",
+          "network": "192.168.10.0/26"
+        },
+        {
+          "id": 20,
+          "name": "printers",
+          "network": "192.168.10.96/28"
+        },
+        {
+          "id": 30,
+          "name": "guests",
+          "network": "192.168.10.64/27"
+        }
+      ]
+    },
+    {
+      "id": "internet",
+      "kind": "cloud"
+    }
+  ],
+  "links": [
+    {
+      "source": "OFFICE-R1",
+      "target": "OFFICE-SW1",
+      "kind": "trunk",
+      "source_interface": "GigabitEthernet0/0",
+      "target_interface": "GigabitEthernet0/1",
+      "vlans": [
+        10,
+        20,
+        30
+      ]
+    },
+    {
+      "source": "OFFICE-R1",
+      "target": "internet",
+      "kind": "uplink",
+      "network": "198.51.100.4/30",
+      "source_interface": "GigabitEthernet0/1",
+      "source_address": "198.51.100.6",
+      "target_address": "198.51.100.5"
+    }
+  ]
+}

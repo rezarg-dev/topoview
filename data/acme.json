@@ -1,0 +1,176 @@
+{
+  "name": "acme",
+  "nodes": [
+    {
+      "id": "HQ-R1",
+      "kind": "router",
+      "site": "hq",
+      "router_id": "1.1.1.1",
+      "summary": "10.20.0.0/23"
+    },
+    {
+      "id": "HQ-SW1",
+      "kind": "switch",
+      "site": "hq",
+      "management_address": "10.20.1.162",
+      "vlans": [
+        {
+          "id": 10,
+          "name": "staff",
+          "network": "10.20.0.0/24"
+        },
+        {
+          "id": 20,
+          "name": "engineering",
+          "network": "10.20.1.0/25"
+        },
+        {
+          "id": 30,
+          "name": "servers",
+          "network": "10.20.1.128/27"
+        },
+        {
+          "id": 99,
+          "name": "management",
+          "network": "10.20.1.160/28"
+        }
+      ]
+    },
+    {
+      "id": "NORTH-R1",
+      "kind": "router",
+      "site": "north",
+      "router_id": "2.2.2.2",
+      "summary": "10.20.2.0/25"
+    },
+    {
+      "id": "NORTH-SW1",
+      "kind": "switch",
+      "site": "north",
+      "management_address": "10.20.2.98",
+      "vlans": [
+        {
+          "id": 10,
+          "name": "staff",
+          "network": "10.20.2.0/26"
+        },
+        {
+          "id": 40,
+          "name": "guests",
+          "network": "10.20.2.64/27"
+        },
+        {
+          "id": 99,
+          "name": "management",
+          "network": "10.20.2.96/28"
+        }
+      ]
+    },
+    {
+      "id": "SOUTH-R1",
+      "kind": "router",
+      "site": "south",
+      "router_id": "3.3.3.3",
+      "summary": "10.20.2.128/26"
+    },
+    {
+      "id": "SOUTH-SW1",
+      "kind": "switch",
+      "site": "south",
+      "management_address": "10.20.2.162",
+      "vlans": [
+        {
+          "id": 10,
+          "name": "staff",
+          "network": "10.20.2.128/27"
+        },
+        {
+          "id": 99,
+          "name": "management",
+          "network": "10.20.2.160/28"
+        }
+      ]
+    },
+    {
+      "id": "internet",
+      "kind": "cloud"
+    }
+  ],
+  "links": [
+    {
+      "source": "HQ-R1",
+      "target": "HQ-SW1",
+      "kind": "trunk",
+      "source_interface": "GigabitEthernet0/0",
+      "target_interface": "GigabitEthernet0/1",
+      "vlans": [
+        10,
+        20,
+        30,
+        99
+      ]
+    },
+    {
+      "source": "NORTH-R1",
+      "target": "NORTH-SW1",
+      "kind": "trunk",
+      "source_interface": "GigabitEthernet0/0",
+      "target_interface": "GigabitEthernet0/1",
+      "vlans": [
+        10,
+        40,
+        99
+      ]
+    },
+    {
+      "source": "SOUTH-R1",
+      "target": "SOUTH-SW1",
+      "kind": "trunk",
+      "source_interface": "GigabitEthernet0/0",
+      "target_interface": "GigabitEthernet0/1",
+      "vlans": [
+        10,
+        99
+      ]
+    },
+    {
+      "source": "HQ-R1",
+      "target": "NORTH-R1",
+      "kind": "wan",
+      "network": "10.20.2.192/30",
+      "source_interface": "GigabitEthernet0/1",
+      "target_interface": "GigabitEthernet0/1",
+      "source_address": "10.20.2.193",
+      "target_address": "10.20.2.194"
+    },
+    {
+      "source": "HQ-R1",
+      "target": "SOUTH-R1",
+      "kind": "wan",
+      "network": "10.20.2.196/30",
+      "source_interface": "Serial0/0/0",
+      "target_interface": "Serial0/0/0",
+      "source_address": "10.20.2.197",
+      "target_address": "10.20.2.198"
+    },
+    {
+      "source": "NORTH-R1",
+      "target": "SOUTH-R1",
+      "kind": "wan",
+      "network": "10.20.2.200/30",
+      "source_interface": "GigabitEthernet0/2",
+      "target_interface": "GigabitEthernet0/1",
+      "source_address": "10.20.2.201",
+      "target_address": "10.20.2.202"
+    },
+    {
+      "source": "HQ-R1",
+      "target": "internet",
+      "kind": "uplink",
+      "network": "203.0.113.0/30",
+      "source_interface": "GigabitEthernet0/2",
+      "source_address": "203.0.113.2",
+      "target_address": "203.0.113.1"
+    }
+  ]
+}
