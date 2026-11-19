@@ -1,0 +1,15 @@
+{
+  "name": "topoview",
+  "version": "0.1.0",
+  "description": "Interactive network topology viewer for the browser, no build step",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "Reza Ghaderi",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
