@@ -119,6 +119,36 @@ button[aria-pressed='true'] {
   color: var(--surface);
 }
 
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.error {
+  margin: 0;
+  padding: 0.6rem 1.25rem;
+  background: #fde8e8;
+  color: #8a1c1c;
+  border-bottom: 1px solid #f3b4b4;
+  white-space: pre-line;
+}
+
+body.dropping main {
+  outline: 3px dashed var(--accent);
+  outline-offset: -8px;
+}
+
 .vlans {
   display: flex;
   flex-wrap: wrap;

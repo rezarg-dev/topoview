@@ -11,9 +11,22 @@
       <h1>topoview</h1>
       <span id="network-name" class="network-name"></span>
       <div class="tools">
+        <label class="field">
+          <span>Example</span>
+          <select id="dataset">
+            <option value="acme">acme (3 sites)</option>
+            <option value="single-site">single-site</option>
+          </select>
+        </label>
+        <label class="button file">
+          Open file
+          <input id="file" type="file" accept="application/json,.json" class="visually-hidden" />
+        </label>
         <button id="theme" type="button" aria-pressed="false">Dark mode</button>
       </div>
     </header>
+
+    <p id="error" class="error" role="alert" hidden></p>
 
     <nav id="vlans" class="vlans" aria-label="Highlight a VLAN"></nav>
 

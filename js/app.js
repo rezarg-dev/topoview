@@ -1,7 +1,7 @@
 import { describeNode } from './details.js';
 import { clamp, layout } from './layout.js';
 import { render } from './render.js';
-import { allVlans, parseTopology, vlanFootprint } from './topology.js';
+import { allVlans, parseTopology, TopologyError, vlanFootprint } from './topology.js';
 
 const canvas = document.querySelector('#canvas');
 const state = {
@@ -272,10 +272,68 @@ function show(topology) {
   highlightVlan(null);
 }
 
+// --- loading -----------------------------------------------------------------
+
+const errorBox = document.querySelector('#error');
+
+function showError(error) {
+  if (!error) {
+    errorBox.hidden = true;
+    return;
+  }
+  const lines = error instanceof TopologyError ? error.problems : [error.message];
+  errorBox.textContent = ['This file cannot be shown:', ...lines.slice(0, 8)].join('\n');
+  errorBox.hidden = false;
+}
+
 async function loadUrl(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`could not load ${url} (HTTP ${response.status})`);
   show(parseTopology(await response.json()));
 }
 
-loadUrl('data/acme.json');
+// The diagram on screen is only replaced once the new file has been read
+// and checked completely.
+async function open(read) {
+  try {
+    await read();
+    showError(null);
+  } catch (error) {
+    showError(error);
+  }
+}
+
+async function loadFile(file) {
+  let data;
+  try {
+    data = JSON.parse(await file.text());
+  } catch {
+    throw new Error(`${file.name} is not valid JSON`);
+  }
+  show(parseTopology(data));
+}
+
+const dataset = document.querySelector('#dataset');
+dataset.addEventListener('change', () => open(() => loadUrl(`data/${dataset.value}.json`)));
+
+const fileInput = document.querySelector('#file');
+fileInput.addEventListener('change', () => {
+  const [file] = fileInput.files;
+  if (file) open(() => loadFile(file));
+  // Lets the same file be chosen again after it was fixed.
+  fileInput.value = '';
+});
+
+window.addEventListener('dragover', (event) => {
+  event.preventDefault();
+  document.body.classList.add('dropping');
+});
+window.addEventListener('dragleave', () => document.body.classList.remove('dropping'));
+window.addEventListener('drop', (event) => {
+  event.preventDefault();
+  document.body.classList.remove('dropping');
+  const [file] = event.dataTransfer.files;
+  if (file) open(() => loadFile(file));
+});
+
+open(() => loadUrl(`data/${dataset.value}.json`));
