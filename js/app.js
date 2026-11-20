@@ -1,7 +1,7 @@
 import { describeNode } from './details.js';
 import { layout } from './layout.js';
 import { render } from './render.js';
-import { parseTopology } from './topology.js';
+import { allVlans, parseTopology, vlanFootprint } from './topology.js';
 
 const canvas = document.querySelector('#canvas');
 const state = {
@@ -10,6 +10,7 @@ const state = {
   size: null,
   view: null,
   selected: null,
+  vlan: null,
 };
 
 function element(name, properties = {}, children = []) {
@@ -96,6 +97,47 @@ function select(id) {
   showDetails(id);
 }
 
+// --- VLAN highlighting -------------------------------------------------------
+
+function highlightVlan(vlanId) {
+  state.vlan = vlanId;
+  const footprint = vlanId === null ? null : vlanFootprint(state.topology, vlanId);
+
+  canvas.classList.toggle('filtered', footprint !== null);
+  for (const [id, group] of state.view.nodes) {
+    group.classList.toggle('in-vlan', footprint?.nodes.has(id) ?? false);
+  }
+  state.view.links.forEach(({ group }, index) => {
+    group.classList.toggle('in-vlan', footprint?.links.has(index) ?? false);
+  });
+  for (const button of document.querySelectorAll('#vlans button')) {
+    button.setAttribute('aria-pressed', String(Number(button.dataset.vlan) === vlanId));
+  }
+}
+
+function showVlans() {
+  const bar = document.querySelector('#vlans');
+  const vlans = allVlans(state.topology);
+  if (vlans.length === 0) {
+    bar.replaceChildren();
+    return;
+  }
+  const buttons = vlans.map((vlan) => {
+    const button = element('button', {
+      type: 'button',
+      textContent: `${vlan.id} ${vlan.name}`,
+    });
+    button.dataset.vlan = vlan.id;
+    button.setAttribute('aria-pressed', 'false');
+    // Clicking the active VLAN again switches the highlight off.
+    button.addEventListener('click', () =>
+      highlightVlan(state.vlan === vlan.id ? null : vlan.id),
+    );
+    return button;
+  });
+  bar.replaceChildren(element('span', { textContent: 'Highlight VLAN' }), ...buttons);
+}
+
 // --- selecting ---------------------------------------------------------------
 
 canvas.addEventListener('click', (event) => {
@@ -115,6 +157,8 @@ function show(topology) {
   document.querySelector('#network-name').textContent = topology.name;
   document.title = `${topology.name} - topoview`;
   select(null);
+  showVlans();
+  highlightVlan(null);
 }
 
 async function loadUrl(url) {
