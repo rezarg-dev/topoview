@@ -1,5 +1,5 @@
 import { describeNode } from './details.js';
-import { layout } from './layout.js';
+import { clamp, layout } from './layout.js';
 import { render } from './render.js';
 import { allVlans, parseTopology, vlanFootprint } from './topology.js';
 
@@ -138,9 +138,64 @@ function showVlans() {
   bar.replaceChildren(element('span', { textContent: 'Highlight VLAN' }), ...buttons);
 }
 
+// --- moving nodes ------------------------------------------------------------
+
+function moveNode(id, point) {
+  state.positions.set(id, clamp(point, state.size));
+  state.view.update(id);
+}
+
+// Pointer coordinates are in screen pixels. The SVG is scaled to fit its
+// box, so they have to be converted into the coordinate system of the drawing.
+function toCanvas(event) {
+  const point = new DOMPoint(event.clientX, event.clientY);
+  return point.matrixTransform(canvas.getScreenCTM().inverse());
+}
+
+let drag = null;
+
+canvas.addEventListener('pointerdown', (event) => {
+  const group = event.target.closest('.node');
+  if (!group || event.button !== 0) return;
+  const id = group.dataset.id;
+  const start = toCanvas(event);
+  const origin = state.positions.get(id);
+  drag = { id, group, moved: false, dx: origin.x - start.x, dy: origin.y - start.y };
+  group.setPointerCapture(event.pointerId);
+});
+
+canvas.addEventListener('pointermove', (event) => {
+  if (!drag) return;
+  const point = toCanvas(event);
+  const target = { x: point.x + drag.dx, y: point.y + drag.dy };
+  const current = state.positions.get(drag.id);
+  // A click always moves the pointer a little. Only treat it as a drag
+  // once it has travelled a few pixels.
+  if (!drag.moved && Math.hypot(target.x - current.x, target.y - current.y) < 4) return;
+  drag.moved = true;
+  drag.group.classList.add('dragging');
+  moveNode(drag.id, target);
+});
+
+// Set when a drag ends, so the click that follows it does not select.
+let suppressClick = false;
+
+function endDrag() {
+  if (!drag) return;
+  drag.group.classList.remove('dragging');
+  suppressClick = drag.moved;
+  drag = null;
+}
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+
 // --- selecting ---------------------------------------------------------------
 
 canvas.addEventListener('click', (event) => {
+  if (suppressClick) {
+    suppressClick = false;
+    return;
+  }
   const group = event.target.closest('.node');
   // A click on the empty canvas clears the selection.
   select(group ? group.dataset.id : null);

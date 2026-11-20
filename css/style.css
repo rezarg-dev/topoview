@@ -108,6 +108,7 @@ main {
   min-height: 420px;
   max-height: calc(100vh - 110px);
   background: var(--background);
+  touch-action: none;
 }
 
 /* --- links --- */
@@ -196,6 +197,10 @@ main {
 .node.selected > :first-child {
   stroke: var(--accent);
   stroke-width: 4;
+}
+
+.node.dragging {
+  cursor: grabbing;
 }
 
 /* While a VLAN is highlighted, everything that does not carry it fades. */
