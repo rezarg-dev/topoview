@@ -13,6 +13,40 @@
   color-scheme: light;
 }
 
+/* Dark colours apply when the system asks for them and the user has not
+   chosen light, or when the user has chosen dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --background: #12161d;
+    --surface: #1b212b;
+    --text: #e6eaf1;
+    --muted: #9aa5b8;
+    --border: #343d4c;
+    --accent: #6cb2ff;
+    --router: #1d3557;
+    --switch: #1f3f2b;
+    --cloud: #2a313d;
+    --line: #8b96a9;
+    --wan: #f0a35e;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --background: #12161d;
+  --surface: #1b212b;
+  --text: #e6eaf1;
+  --muted: #9aa5b8;
+  --border: #343d4c;
+  --accent: #6cb2ff;
+  --router: #1d3557;
+  --switch: #1f3f2b;
+  --cloud: #2a313d;
+  --line: #8b96a9;
+  --wan: #f0a35e;
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -45,6 +79,14 @@ h1 {
 
 .network-name {
   color: var(--muted);
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 
 button,

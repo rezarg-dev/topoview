@@ -224,6 +224,39 @@ canvas.addEventListener('keydown', (event) => {
   }
 });
 
+// --- theme -------------------------------------------------------------------
+
+const themeButton = document.querySelector('#theme');
+
+function storedTheme() {
+  // Storage can be unavailable (private mode, blocked cookies). The theme
+  // then simply is not remembered.
+  try {
+    return localStorage.getItem('topoview-theme');
+  } catch {
+    return null;
+  }
+}
+
+function applyTheme(theme) {
+  if (theme) document.documentElement.dataset.theme = theme;
+  const dark =
+    theme === 'dark' || (!theme && matchMedia('(prefers-color-scheme: dark)').matches);
+  themeButton.setAttribute('aria-pressed', String(dark));
+}
+
+themeButton.addEventListener('click', () => {
+  const next = themeButton.getAttribute('aria-pressed') === 'true' ? 'light' : 'dark';
+  applyTheme(next);
+  try {
+    localStorage.setItem('topoview-theme', next);
+  } catch {
+    // See storedTheme().
+  }
+});
+
+applyTheme(storedTheme());
+
 // --- showing a topology ------------------------------------------------------
 
 function show(topology) {
