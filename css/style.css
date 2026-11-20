@@ -50,7 +50,7 @@ h1 {
 main {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 320px;
   min-height: 0;
 }
 
@@ -137,5 +137,92 @@ main {
 .node-cloud .label {
   stroke: none;
   font-weight: 500;
+}
+
+.node:hover > :first-child,
+.node:focus-visible > :first-child {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.node.selected > :first-child {
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+
+/* --- details panel --- */
+
+.details {
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.details h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.details h3 {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.details .kind,
+.details .hint {
+  margin: 0;
+  color: var(--muted);
+}
+
+.details dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.9rem;
+  margin: 0.9rem 0 0;
+}
+
+.details dt {
+  color: var(--muted);
+}
+
+.details dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.details ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.details li {
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.details li:first-child {
+  border-top: 0;
+}
+
+.details .peer {
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.details .sub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
 }
 
