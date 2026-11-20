@@ -201,6 +201,29 @@ canvas.addEventListener('click', (event) => {
   select(group ? group.dataset.id : null);
 });
 
+// --- keyboard ----------------------------------------------------------------
+
+const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+
+canvas.addEventListener('keydown', (event) => {
+  const group = event.target.closest('.node');
+  if (!group) return;
+  const id = group.dataset.id;
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    select(state.selected === id ? null : id);
+  } else if (event.key === 'Escape') {
+    select(null);
+  } else if (event.key in ARROWS) {
+    event.preventDefault();
+    const [dx, dy] = ARROWS[event.key];
+    const step = event.shiftKey ? 40 : 10;
+    const { x, y } = state.positions.get(id);
+    moveNode(id, { x: x + dx * step, y: y + dy * step });
+  }
+});
+
 // --- showing a topology ------------------------------------------------------
 
 function show(topology) {
