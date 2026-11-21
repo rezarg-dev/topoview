@@ -362,3 +362,33 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+/* --- small screens: the panel moves below the diagram --- */
+
+@media (max-width: 800px) {
+  main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #canvas {
+    max-height: 60vh;
+  }
+
+  .details {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* --- printing: only the diagram and the details --- */
+
+@media print {
+  .tools,
+  .vlans,
+  .error {
+    display: none;
+  }
+
+  #canvas {
+    max-height: none;
+  }
+}
