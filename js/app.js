@@ -1,4 +1,5 @@
 import { describeNode } from './details.js';
+import { download, toStandaloneSvg } from './export.js';
 import { clamp, layout } from './layout.js';
 import { render } from './render.js';
 import { allVlans, parseTopology, TopologyError, vlanFootprint } from './topology.js';
@@ -338,6 +339,10 @@ window.addEventListener('drop', (event) => {
 
 document.querySelector('#reset').addEventListener('click', () => {
   if (state.topology) show(state.topology);
+});
+
+document.querySelector('#export').addEventListener('click', () => {
+  if (state.topology) download(`${state.topology.name}.svg`, toStandaloneSvg(canvas));
 });
 
 open(() => loadUrl(`data/${dataset.value}.json`));
