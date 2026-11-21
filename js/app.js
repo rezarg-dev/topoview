@@ -336,4 +336,8 @@ window.addEventListener('drop', (event) => {
   if (file) open(() => loadFile(file));
 });
 
+document.querySelector('#reset').addEventListener('click', () => {
+  if (state.topology) show(state.topology);
+});
+
 open(() => loadUrl(`data/${dataset.value}.json`));
