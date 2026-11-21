@@ -1,5 +1,6 @@
 // Draws a topology as SVG and keeps it in sync with node positions.
 
+import { linkGeometry } from './geometry.js';
 import { shortInterface } from './topology.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -68,35 +69,28 @@ export function render(root, topology, positions) {
     nodes.set(node.id, group);
   }
 
-  // Port labels sit a fixed distance along the line from their node, so
-  // they stay readable whatever the angle of the link.
   const placeLink = ({ link, path, sourceLabel, targetLabel }) => {
-    const a = positions.get(link.source);
-    const b = positions.get(link.target);
-    path.setAttribute('d', `M${a.x} ${a.y}L${b.x} ${b.y}`);
-
-    const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-    const offset = Math.min(62, length / 2 - 8);
-    const ux = (b.x - a.x) / length;
-    const uy = (b.y - a.y) / length;
-    sourceLabel.setAttribute('x', a.x + ux * offset);
-    sourceLabel.setAttribute('y', a.y + uy * offset - 6);
-    targetLabel.setAttribute('x', b.x - ux * offset);
-    targetLabel.setAttribute('y', b.y - uy * offset - 6);
+    const others = [];
+    for (const [id, position] of positions) {
+      if (id !== link.source && id !== link.target) others.push(position);
+    }
+    const shape = linkGeometry(positions.get(link.source), positions.get(link.target), others);
+    path.setAttribute('d', shape.d);
+    sourceLabel.setAttribute('x', shape.source.x);
+    sourceLabel.setAttribute('y', shape.source.y - 6);
+    targetLabel.setAttribute('x', shape.target.x);
+    targetLabel.setAttribute('y', shape.target.y - 6);
   };
 
+  // Moving one node can put it in the way of a link between two others, or
+  // take it out of the way again, so every link is placed anew.
   const update = (id) => {
-    if (id === undefined) {
-      for (const [nodeId, group] of nodes) {
-        const { x, y } = positions.get(nodeId);
-        group.setAttribute('transform', `translate(${x} ${y})`);
-      }
-      links.forEach(placeLink);
-      return;
+    const moved = id === undefined ? [...nodes.keys()] : [id];
+    for (const nodeId of moved) {
+      const { x, y } = positions.get(nodeId);
+      nodes.get(nodeId).setAttribute('transform', `translate(${x} ${y})`);
     }
-    const { x, y } = positions.get(id);
-    nodes.get(id).setAttribute('transform', `translate(${x} ${y})`);
-    links.filter(({ link }) => link.source === id || link.target === id).forEach(placeLink);
+    links.forEach(placeLink);
   };
 
   update();
